@@ -2,12 +2,13 @@
     org #8000
     
 begin_file:
-       DI             ;создание
-       LD HL,#FE00    ;вектора
-       LD A,H         ;маскиру-
-       LD I,A         ;емых
-       INC A          ;преры-
-       LD (HL),A      ;ваний
+;создание вектора маскируемых прерываний
+       DI             
+       LD HL,#FE00
+       LD A,H
+       LD I,A
+       INC A
+       LD (HL),A
        INC L
        JR NZ,$-2
        LD C,H
@@ -38,4 +39,6 @@ end_file:
     display "code size: ", /d, end_file - begin_file
     savehob "pro01.$C", "pro01.C", begin_file, end_file - begin_file
     savesna "pro01.sna", begin_file
+    savebin "pro01.C", begin_file, end_file - begin_file
+    savetap "pro01.tap", begin_file 
     labelslist "pro01.l"

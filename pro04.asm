@@ -3,31 +3,56 @@ PLOTT   equ #a000; 1k table
         org #8000
 
 begin_file:
-       DI             ;создание
-       LD HL,#FE00    ;вектора
-       LD A,H         ;маскиру-
-       LD I,A         ;емых
-       INC A          ;преры-
-       LD (HL),A      ;ваний
-       INC L
-       JR NZ,$-2
-       LD C,H
-       INC H
-       LD (HL),A
-       LD L,A
-       LD (HL),#C9
-       IM 2
+;создание вектора маскируемых прерываний
+        DI
+        LD HL,#FE00
+        LD A,H
+        LD I,A
+        INC A
+        LD (HL),A
+        INC L
+        JR NZ,$-2
+        LD C,H
+        INC H
+        LD (HL),A
+        LD L,A
+        LD (HL),#C9
+        IM 2
 ;основной цикл, иными словами сама суть
         call INSTALL
-        ld b, 100
-        ld c, 100
+
+        ld ly, 100  ; 8 
+LOOP    LD A,#DF   ;P O I U Y
+        IN A,(#FE) ;младший бит адреса порта.
+        
+        BIT 0,A    ; => "P" определяем состоян. бита,
+                   ;соответствующ.клавише "1"
+                   ;если бит активен, то флаг
+                   ;Z=1, если нет, то Z=0.
+        call Z,BLUE
+        LD A,#DF   ;P O I U Y
+        IN A,(#FE) ;опрос клавы.
+        BIT 1,A    ;определяем состояние первого бита => "O" 
+        call Z,RED
+        
+        ld b, ly
+        ld c, ly
         call PLOT
-        ret
+        dec ly
+        JP LOOP
+
+BLUE    LD A,1     ;BORDER цвет синий
+        OUT (254),A
+        RET
+RED     LD A,2     ;BORBER цвет красный
+        OUT (254),A
+        RET
 
 INSTALL  ; процедура инсталяции 
-        LD HL,PLOTT   ; адрес таблици 
-        ;в 1024 байта для точки, младший байт адреса должен быть ра-
-        ;вен #00! например #F0 или #BC00
+        LD HL,PLOTT
+        ; адрес таблици в 1024 байта для точки, 
+        ; младший байт адреса должен быть равен #00!
+        ; например #F0 или #BC00
         LD DE,#4000   ; адрес экрана 
         LD B,E 
         LD C,#80 ;* 
@@ -68,9 +93,8 @@ LOOP1   LD (HL),E
         JR NZ,LOOP3 
         RET 
 
-
 PLOT  ; процедура построения точки 
-        LD L,C 
+        LD L,B 
         LD H,PLOTT/256 
         LD A,(HL) 
         INC H 
@@ -82,9 +106,9 @@ PLOT  ; процедура построения точки
         INC H 
         LD A,(DE) 
         XOR (HL) 
-        ;OR (HL) можно заменить на XOR (HL) для наложения по принципу
-        ;XOR,или на AND (HL) для стирания точек, но тогда уже надо за-
-        ;менить регистр C на входе процедуры INSTALL с #80 на #7F
+; OR (HL) можно заменить на XOR (HL) для наложения по принципу XOR,
+; или на AND (HL) для стирания точек,
+; но тогда уже надо заменить регистр C на входе процедуры INSTALL с #80 на #7F
         LD (DE),A 
         RET 
 

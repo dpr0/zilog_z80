@@ -1,3 +1,5 @@
 *.$c
 *.l
 *.sna
+.DS_Store
+.byebug_history
