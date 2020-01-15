@@ -1,6 +1,4 @@
     device zxspectrum48
-    
-xxx1   db "xxx1"
 disp             equ #4000
 attr             equ #5800  
 fast_point_table equ #a000; 1k table
@@ -12,7 +10,6 @@ point_array      equ #a400; 512b
     org #6100 ; адрес на который компилировать
     
 begin_file:
-xxx2   db "xxx2"
     ld sp,#6100 ; устанавливаем дно стека
     ei ; разрешаем прерывания
     xor a
@@ -127,8 +124,6 @@ speed inc d
     djnz draw_loop
     jp loop
 
-xxx3   db "xxx3"
-
 change_speed
         LD A,#F7
         IN A,(#FE)
@@ -242,7 +237,6 @@ random_elite:
     rlca
     ld (random_store+2),a
     ret
-xxx4   db "xxx4"
 
 random_store:
     db 0,42,109    
@@ -466,11 +460,10 @@ dir15   dec e
         dec d
         dec d
         ret
-xxx5    db "xxx5"
       
 end_file:
     display "code size: ", /d, end_file - begin_file
-    savehob "pro06_pixfx.$C", "pro06_pixfx.C", begin_file, end_file - begin_file
-    savesna "pro06_pixfx.sna", begin_file
-    savebin "pro06_pixfx.C", begin_file, end_file - begin_file
-    labelslist "pro06_pixfx.l"
+    savehob "pro06.$C", "pro06.C", begin_file, end_file - begin_file
+    savesna "pro06.sna", begin_file
+    savebin "pro06.C", begin_file, end_file - begin_file
+    labelslist "pro06.l"

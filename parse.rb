@@ -57,7 +57,7 @@ class Disassembler
         @y = bin[2..4].to_i(2)
         @z = bin[5..7].to_i(2)
         @p = bin[2..3].to_i(2)
-        @q = bin[4] == 1 ? true : false
+        @q = bin[4] == '1' ? true : false
     end
 
     def command
@@ -83,7 +83,7 @@ class Disassembler
             when 6 then calc_bytes(->(a, b){ "LD #{a},##{b}" }, T_R[@y], 1)
             when 7 then ['RLCA','RRCA','RLA','RRA','DAA','CPL','SCF','CCF'][@y]
             end
-        when 1 then @y == 6 ? 'HALT' : "LD #{T_R[@y]},#{T_R[@z]}"
+        when 1 then @z == 6 && @y == 6 ? 'HALT' : "LD #{T_R[@y]},#{T_R[@z]}"
         when 2 then "#{T_ALU[@y]} #{T_R[@z]}"
         when 3
             case @z
@@ -169,42 +169,3 @@ start_time = Time.now
 Disassembler.new(ARGV[0]).start
 puts "Memory: %d kbyte." % (`ps -o rss= -p #{Process.pid}`)
 puts "Time: #{Time.now - start_time} sec."
-
-# F3 DI
-# 31 LD SP,#6100
-# 00
-# 61
-# 3E LD A,#07
-# 07
-# 06 LD B,#02
-# 02
-
-# 90 SUB B
-# FE CP #06
-# 06
-# 28
-# 06
-# 38
-# 0A
-# 30
-# 0E
-# F3
-# 76
-# 3E
-# 00
-# D3
-# FE
-# F3
-# 76
-# 3E
-# 01
-# D3
-# FE
-# F3
-# 76
-# 3E
-# 02
-# D3
-# FE
-# F3
-# 76
