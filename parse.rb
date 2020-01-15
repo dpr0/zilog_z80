@@ -15,7 +15,7 @@ class Disassembler
     def initialize(file_name)
         @file_name = file_name
         @x = 0; @y = 0; @z = 0; @p = 0; @q = 0;
-        @d = 0; @n = 0; @nn = 0; @i = 0; @mem = nil
+        @nn = 0; @i = 0; @lyambda = nil
         @prefix = nil
     end
 
@@ -34,14 +34,14 @@ class Disassembler
                     @i -= 1
                     if @i == 0
                         @prefix = nil
-                        @mem + byte.to_s(16).rjust(2, '0') + @temp
+                        @lyambda.call(@arg, byte.to_s(16).rjust(2, '0').upcase + @temp)
                     else
-                        @temp = byte.to_s(16).rjust(2, '0')
+                        @temp = byte.to_s(16).rjust(2, '0').upcase
                         nil
                     end
                   when 1
                     @prefix = nil
-                    @mem + byte.to_s(16).rjust(2, '0')
+                    @lyambda.call(@arg, byte.to_s(16).rjust(2, '0').upcase)
                   else command
                   end
             result_file << (str + "\n") if str
@@ -68,11 +68,11 @@ class Disassembler
                 case @y
                 when 0 then 'NOP'
                 when 1 then 'EX AF, AF\''
-                when 2 then "DJNZ #{@d}"
-                when 3 then "JR #{@d}"
-                else        "JR #{T_CC[@y-4]},#{@d}"
+                when 2 then calc_bytes(->(a, b){ "DJNZ #{b}" }, nil, 1)
+                when 3 then calc_bytes(->(a, b){ "JR #{b}" }, nil, 1)
+                else        calc_bytes(->(a, b){ "JR #{a},##{b}" }, T_CC[@y-4], 1)
                 end
-            when 1 then @q ? "ADD HL,#{T_RP[@p]}" : calc_bytes("LD #{T_RP[@p]},#", 2)
+            when 1 then @q ? "ADD HL,#{T_RP[@p]}" : calc_bytes(->(a, b){ "LD #{a},##{b}" }, T_RP[@p], 2)
             when 2
                 a1 = @p == 2 ? 'HL' : 'A'
                 a2 = ['(BC)','(DE)',"(#{@nn})","(#{@nn})"]
@@ -80,7 +80,7 @@ class Disassembler
             when 3 then "#{@q ? 'DEC' : 'INC'} #{T_RP[@p]}"
             when 4 then "INC #{T_R[@y]}"
             when 5 then "DEC #{T_R[@y]}"
-            when 6 then "LD #{T_R[@y]},#{@n}"
+            when 6 then calc_bytes(->(a, b){ "LD #{a},##{b}" }, T_R[@y], 1)
             when 7 then ['RLCA','RRCA','RLA','RRA','DAA','CPL','SCF','CCF'][@y]
             end
         when 1 then @y == 6 ? 'HALT' : "LD #{T_R[@y]},#{T_R[@z]}"
@@ -89,20 +89,31 @@ class Disassembler
             case @z
             when 0 then "RET #{T_CC[@y]}"
             when 1 then @q ? ['RET','EXX','JP HL','LD SP, HL'][@p] : "POP #{T_RP2[@p]}"
-            when 2 then "JP #{T_CC[@y]},#{@nn}"
-            when 3 then ["JP #{@nn}", set_prefix('cb'), "OUT (#{@n}),A", "IN A,(#{@n})", "EX (SP),HL", "EX DE,HL", 'DI', 'EI'][@y]
-            when 4 then "CALL #{T_CC[@y]},#{@nn}"
-            when 5 then @q ? ["CALL #{@nn}", set_prefix('dd'), set_prefix('ed'), set_prefix('fd')][@p] : "PUSH #{T_RP2[@p]}"
-            when 6 then "#{T_ALU[@y]} #{@n}"
+            when 2 then calc_bytes(->(a, b){ "JP #{a},#{b}" }, T_CC[@y], 2)
+            when 3
+                case @y
+                when 0 then calc_bytes(->(a, b){ "JP #{b}" }, nil, 2)
+                when 1 then set_prefix('cb')
+                when 2 then calc_bytes(->(a, b){ "OUT (##{b}),A" }, nil, 1)
+                when 3 then calc_bytes(->(a, b){ "IN A,(##{b})" }, nil, 1)
+                when 4 then "EX (SP),HL"
+                when 5 then "EX DE,HL"
+                when 6 then 'DI'
+                when 7 then 'EI'
+                end
+            when 4 then calc_bytes(->(a, b){ "CALL #{a},#{b}" }, T_CC[@y], 2)
+            when 5 then @q ? [calc_bytes(->(a, b){ "CALL #{b}" }, nil, 2), set_prefix('dd'), set_prefix('ed'), set_prefix('fd')][@p] : "PUSH #{T_RP2[@p]}"
+            when 6 then calc_bytes(->(a, b){ "#{a} ##{b}" }, T_ALU[@y], 1)
             when 7 then "RST #{@y*8}"
             end
         end
     end
 
-    def calc_bytes(str, b)
-        @prefix = b
-        @i = b
-        @mem = str
+    def calc_bytes(lyambda, arg, bb)
+        @prefix = bb
+        @i = bb
+        @arg = arg
+        @lyambda = lyambda
         nil
     end
 
@@ -123,7 +134,7 @@ class Disassembler
             when 0 then "IN #{ "#{T_R[@y]}," if @y != 6}(C)"
             when 1 then "OUT (C),#{@y == 6 ? 0 : T_R[@y]}"
             when 2 then "#{@q ? 'ADC' : 'SBC'} HL,#{T_RP[@p]}"
-            when 3 then 'LD ' + (@q ? "#{T_RP[@p]},(#{@nn})" : "(#{@nn}),#{T_RP[@p]}")
+            when 3 then calc_bytes((@q ? ->(a, b){ "LD #{a},(#{b})" } : ->(a, b){ "LD #{b},(#{a})" }), T_RP[@p], 2)
             when 4 then 'NEG'
             when 5 then @y == 1 ? 'RETI' : 'RETN'
             when 6 then "IM #{T_IM[@y]}"
@@ -159,16 +170,17 @@ Disassembler.new(ARGV[0]).start
 puts "Memory: %d kbyte." % (`ps -o rss= -p #{Process.pid}`)
 puts "Time: #{Time.now - start_time} sec."
 
-# F3
-# 31
+# F3 DI
+# 31 LD SP,#6100
 # 00
 # 61
-# 3E
+# 3E LD A,#07
 # 07
-# 06
+# 06 LD B,#02
 # 02
-# 90
-# FE
+
+# 90 SUB B
+# FE CP #06
 # 06
 # 28
 # 06

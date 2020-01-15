@@ -1,26 +1,23 @@
 DI
-IN A,(#31)
-NOP
-LD H,C
+LD SP,#6100
 LD A,#07
 LD B,#02
 SUB B
-CP 06
-JR Z,0
-LD B,#38
-LD (BC),A
-JR NC,0
-LD C,#F3
+CP #06
+JR Z,#06
+JR C,#0A
+JR NC,#0E
+DI
 HALT
 LD A,#00
-IN A,(#FE)
+OUT (#FE),A
 DI
-IN A,(#76)
+HALT
 LD A,#01
-IN A,(#FE)
+OUT (#FE),A
 DI
-IN A,(#76)
+HALT
 LD A,#02
-IN A,(#FE)
+OUT (#FE),A
 DI
-IN A,(#76)
+HALT

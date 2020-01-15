@@ -4,9 +4,9 @@ LD A,#07
 LD B,#02
 SUB B
 CP #06
-JR Z,0
-JR C,0
-JR NC,0
+JR Z,#06
+JR C,#0A
+JR NC,#0E
 DI
 HALT
 LD A,#00
