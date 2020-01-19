@@ -463,7 +463,7 @@ dir15   dec e
       
 end_file:
     display "code size: ", /d, end_file - begin_file
-    savehob "pro06.$C", "pro06.C", begin_file, end_file - begin_file
+    ; savehob "pro06.$C", "pro06.C", begin_file, end_file - begin_file
     savesna "pro06.sna", begin_file
     savebin "pro06.C", begin_file, end_file - begin_file
     labelslist "pro06.l"

@@ -1,3 +1,6 @@
+# Z80 ruby disassembler
+# dvitvitskiy.pro@gmail.com
+# https://github.com/dpr0
 # ruby parse.rb filename
 require 'byebug'
 require 'minitest/autorun'
@@ -15,8 +18,8 @@ class Disassembler
     def initialize(file_name)
         @file_name = file_name
         @x = 0; @y = 0; @z = 0; @p = 0; @q = 0;
-        @nn = 0; @i = 0; @lyambda = nil
-        @prefix = nil
+        @nn = 0; @lyambda = nil; @prefix = nil, @xx = nil
+        @prev = nil
     end
 
     def start
@@ -26,25 +29,33 @@ class Disassembler
             bin = byte.to_s(2).rjust(8, '0')
             load_vars(bin)
             str = case @prefix
-                  when 'cb' then CB_prefix
-                  when 'ed' then ED_prefix
-                  when 'dd' then DD_prefix
-                  when 'fd' then FD_prefix
+                  when 'cb' then cb_prefix
+                  when 'ed' then ed_prefix
+                  when 'dd' then @xx = 'IX'; xx_prefix
+                  when 'fd' then @xx = 'IY'; xx_prefix
                   when 2
-                    @i -= 1
-                    if @i == 0
-                        @prefix = nil
-                        @lyambda.call(@arg, byte.to_s(16).rjust(2, '0').upcase + @temp)
-                    else
-                        @temp = byte.to_s(16).rjust(2, '0').upcase
-                        nil
-                    end
+                    @prefix -= 1
+                    @temp = byte.to_s(16).rjust(2, '0').upcase; nil
                   when 1
+                    byebug if byte.to_s(16) == 'fd'
+                    resp = @lyambda.call(@arg, "#{byte.to_s(16).rjust(2, '0').upcase}")
                     @prefix = nil
-                    @lyambda.call(@arg, byte.to_s(16).rjust(2, '0').upcase)
+                    temp = @temp; @temp = nil
+                    resp += temp if temp
+                    resp = @xx.nil? ? resp : resp.sub("HL", @xx)
+                    @xx = nil
+                    resp
+                  when 'xx'
+                    @prefix = nil
+                    byte -= 256 if byte > 127
+                    des = ['', "+#{byte.to_s}", byte.to_s][byte <=> 0]
+                    resp = @temp.sub("HL", @xx + des)
+                    @temp = nil
+                    resp
                   else command
                   end
-            result_file << (str + "\n") if str
+            @prev = byte.to_s(16)
+            result_file << "    #{str.ljust(13, ' ')} ; \n" if str
         end
 
         result_file.close
@@ -93,7 +104,7 @@ class Disassembler
             when 3
                 case @y
                 when 0 then calc_bytes(->(a, b){ "JP #{b}" }, nil, 2)
-                when 1 then set_prefix('cb')
+                when 1 then @prefix = 'cb'; nil
                 when 2 then calc_bytes(->(a, b){ "OUT (##{b}),A" }, nil, 1)
                 when 3 then calc_bytes(->(a, b){ "IN A,(##{b})" }, nil, 1)
                 when 4 then "EX (SP),HL"
@@ -102,7 +113,17 @@ class Disassembler
                 when 7 then 'EI'
                 end
             when 4 then calc_bytes(->(a, b){ "CALL #{a},#{b}" }, T_CC[@y], 2)
-            when 5 then @q ? [calc_bytes(->(a, b){ "CALL #{b}" }, nil, 2), set_prefix('dd'), set_prefix('ed'), set_prefix('fd')][@p] : "PUSH #{T_RP2[@p]}"
+            when 5 
+                if @q
+                    case @p
+                    when 0 then calc_bytes(->(a, b){ "CALL #{b}" }, nil, 2)
+                    when 1 then @prefix = 'dd'; nil
+                    when 2 then @prefix = 'ed'; nil
+                    when 3 then @prefix = 'fd'; nil
+                    end
+                else
+                    "PUSH #{T_RP2[@p]}"
+                end
             when 6 then calc_bytes(->(a, b){ "#{a} ##{b}" }, T_ALU[@y], 1)
             when 7 then "RST #{@y*8}"
             end
@@ -110,24 +131,18 @@ class Disassembler
     end
 
     def calc_bytes(lyambda, arg, bb)
-        @prefix = bb
-        @i = bb
-        @arg = arg
+        @prefix  = bb
+        @arg     = arg
         @lyambda = lyambda
         nil
     end
 
-    def set_prefix(code)
-        @prefix == code
-        nil
-    end
-
-    def CB_prefix
+    def cb_prefix
         @prefix = nil
         ["#{T_ROT[@y]} ", 'BIT y,', 'RES y,', 'SET y,'][@x] + T_R[@z]
     end
 
-    def ED_prefix
+    def ed_prefix
         @prefix = nil
         if @x == 1
             case @z
@@ -147,14 +162,15 @@ class Disassembler
         end
     end
 
-    def DD_prefix
-        @prefix = nil
-        'NOP'
-    end
-
-    def FD_prefix
-        @prefix = nil
-        'NOP'
+    def xx_prefix # dd fd prefix
+        @temp = command
+        if @temp && @temp.include?('(')
+            @prefix = 'xx'
+            nil
+        else
+            @prefix = 2
+            @temp
+        end
     end
 end
 
