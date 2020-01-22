@@ -18,7 +18,7 @@ class Disassembler
     def initialize(file_name)
         @file_name = file_name
         @x = 0; @y = 0; @z = 0; @p = 0; @q = 0;
-        @nn = 0; @lyambda = nil; @prefix = nil, @xx = nil
+        @nn = 0; @lyambda = nil; @prefix = nil; @xx = nil
         @prev = nil
     end
 
@@ -37,21 +37,22 @@ class Disassembler
                     @prefix -= 1
                     @temp = byte.to_s(16).rjust(2, '0').upcase; nil
                   when 1
-                    byebug if byte.to_s(16) == 'fd'
                     resp = @lyambda.call(@arg, "#{byte.to_s(16).rjust(2, '0').upcase}")
                     @prefix = nil
                     temp = @temp; @temp = nil
-                    resp += temp if temp
+                    if temp
+                        if resp.include?(")")
+                            resp = @xx ? displacement(temp.hex, resp) : resp.sub(")", "#{temp})").sub("(", "(#")
+                        else
+                            resp += temp
+                        end
+                    end
                     resp = @xx.nil? ? resp : resp.sub("HL", @xx)
                     @xx = nil
                     resp
                   when 'xx'
-                    @prefix = nil
-                    byte -= 256 if byte > 127
-                    des = ['', "+#{byte.to_s}", byte.to_s][byte <=> 0]
-                    resp = @temp.sub("HL", @xx + des)
-                    @temp = nil
-                    resp
+                    temp = @temp; @temp = nil
+                    displacement(byte, temp)
                   else command
                   end
             @prev = byte.to_s(16)
@@ -62,6 +63,14 @@ class Disassembler
     end
 
     private
+
+    def displacement(byte, temp)
+        @prefix = nil
+        byte -= 256 if byte > 127
+        des = ['', "+#{byte.to_s}", byte.to_s][byte <=> 0]
+        resp = temp.sub("HL", @xx + des)
+        resp
+    end
 
     def load_vars(bin)
         @x = bin[0..1].to_i(2)

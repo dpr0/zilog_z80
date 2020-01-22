@@ -2,6 +2,11 @@ http://www.emuverse.ru/wiki/Zilog_Z80/%D0%A1%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0
 https://zxpress.ru/tag.php?id=13
 https://zxpress.ru/article.php?id=9902
 https://zxpress.ru/book_articles.php?id=1388
+https://vtrd.in/z80ops.html
+https://github.com/maziac/z80-sample-program/blob/master/.tmp/disasm.asm
+http://www.z80.info/decoding.htm
+https://metacpan.org/pod/Asm::Z80::Table
+http://www.z80.info/z80inst.txt
 
 ADC - ADDITION with CARRY = СЛОЖЕНИЕ с учетом ПЕРЕНОСА. (Операция сложения с учетом состояния флага переноса - флага С регистра F) .
 ADD - ADDITION = СЛОЖЕНИЕ.
