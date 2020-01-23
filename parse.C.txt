@@ -1,3 +1,7 @@
+    LD (#3F4F),A  ; 
+    LD (#5F6F),HL ; 
+    LD A,(#3F4F)  ; 
+    LD HL,(#5F6F) ; 
     LD BC,(#7F8F) ; 
     NOP           ; 
     NOP           ; 

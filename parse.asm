@@ -1,6 +1,11 @@
     device zxspectrum48
     org #6100 ; адрес на который компилировать    
 begin_file:
+    LD (#3F4F),A  ; 
+    LD (#5F6F),HL ; 
+ 
+    LD A,(#3F4F) ; 
+    LD HL,(#5F6F) ; 
     ld bc,(#7f8f)       ; ED 4B NNl NNh
     nop
     nop

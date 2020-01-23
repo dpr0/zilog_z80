@@ -1,383 +1,348 @@
-    LD SP,#6100
-    EI
-    XOR A
-    OUT (#FE),A
-    LD A,#04
-    LD HL,#5800
-    LD DE,#5801
-    LD BC,#02FF
-    LD (HL),A
-    LDIR
-    XOR A
-    LD HL,#4000
-    LD DE,#4001
-    LD BC,#17FF
-    LD (HL),A
-    LDIR
-    LD DE,#4000
-    LD HL,#A000
-    CALL 62C1
-    LD DE,#EFFF
-    LD A,#01
-    LD (DE),A
-    LD DE,#EFFC
-    LD A,#01
-    LD (DE),A
-    NOP
-    NOP
-    LD DE,#8080
-    NOP
-    NOP
-    NOP
-    LD BC,#21DD
-    NOP
-    AND H
-    LD B,#A0
-    CALL 6286
-    CP #C0
-    JR NC,#F9
-    NOP
-    NOP
-    NOP
-    CALL 6286
-    NOP
-    NOP
-    NOP
-    DJNZ EA
-    HALT
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    LD BC,#CDD5
-    OR B
-    LD H,D
-    CALL 61D3
-    POP DE
-    NOP
-    RST 56
-    RST 40
-    LD A,#DF
-    IN A,(#FE)
-    BIT y,A
-    CALL Z,620A
-    LD A,#DF
-    IN A,(#FE)
-    BIT y,A
-    CALL Z,6217
-    CALL 6223
-    PUSH DE
-    CALL 62A1
-    POP DE
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    LD BC,#21DD
-    NOP
-    AND H
-    LD B,#A0
-    NOP
-    NOP
-    NOP
-    LD BC,#CDD5
-    OR B
-    LD H,D
-    POP DE
-    LD A,B
-    AND #07
-    INC A
-    ADD E
-    LD E,A
-    NOP
-    LD BC,#E5DD
-    PUSH BC
-    LD A,(0)
-    CALL M,47EF
-    INC D
-    DJNZ FD
-    POP BC
-    NOP
-    NOP
-    NOP
-    CALL 62A1
-    NOP
-    NOP
-    NOP
-    DJNZ D1
-    JP 6160
-    LD A,#F7
-    IN A,(#FE)
-    RRCA
-    JR C,#0D
-    RRCA
-    JR C,#11
-    RRCA
-    JR C,#15
-    RRCA
-    JR C,#19
-    RRCA
-    JR C,#1D
-    RET
-    LD DE,#EFFC
-    LD A,#01
-    LD (DE),A
-    RET
-    LD DE,#EFFC
-    LD A,#02
-    LD (DE),A
-    RET
-    LD DE,#EFFC
-    LD A,#03
-    LD (DE),A
-    RET
-    LD DE,#EFFC
-    LD A,#04
-    LD (DE),A
-    RET
-    LD DE,#EFFC
-    LD A,#05
-    LD (DE),A
-    RET
-    NOP
-    NOP
-    INC A
-    CP #10
-    JR C,#01
-    XOR A
-    NOP
-    NOP
-    RET
-    NOP
-    NOP
-    DEC A
-    JR NZ,#02
-    LD A,#0F
-    NOP
-    NOP
-    RET
-    NOP
-    NOP
-    CP #00
-    CALL Z,6311
-    RET Z
-    CP #01
-    CALL Z,6314
-    RET Z
-    CP #02
-    CALL Z,6318
-    RET Z
-    CP #03
-    CALL Z,631D
-    RET Z
-    CP #04
-    CALL Z,6321
-    RET Z
-    CP #05
-    CALL Z,6324
-    RET Z
-    CP #06
-    CALL Z,6328
-    RET Z
-    CP #07
-    CALL Z,632D
-    RET Z
-    CP #08
-    CALL Z,6331
-    RET Z
-    CP #09
-    CALL Z,6334
-    RET Z
-    CP #0A
-    CALL Z,6338
-    RET Z
-    CP #0B
-    CALL Z,633D
-    RET Z
-    CP #0C
-    CALL Z,6341
-    RET Z
-    CP #0D
-    CALL Z,6344
-    RET Z
-    CP #0E
-    CALL Z,6348
-    RET Z
-    CP #0F
-    CALL Z,634D
-    RET
-    LD A,(0)
-    SBC (HL)
-    LD H,D
-    LD D,A
-    LD A,(0)
-    SBC A
-    LD H,D
-    LD (0),A
-    SBC (HL)
-    LD H,D
-    ADD D
-    LD D,A
-    LD A,(0)
-    AND B
-    LD H,D
-    LD (0),A
-    SBC A
-    LD H,D
-    ADD D
-    RLCA
-    LD (0),A
-    AND B
-    LD H,D
-    RET
-    NOP
-    LD HL,(0)
-    LD L,L
-    LD H,#A0
-    LD L,D
-    LD D,(HL)
-    INC H
-    LD A,(HL)
-    INC H
-    LD L,E
-    OR (HL)
-    LD E,A
-    INC H
-    LD A,(DE)
-    OR (HL)
-    LD (DE),A
-    RET
-    LD H,#A0
-    LD L,D
-    LD D,(HL)
-    INC H
-    LD A,(HL)
-    INC H
-    LD L,E
-    OR (HL)
-    LD E,A
-    INC H
-    EX DE,HL
-    LD A,(DE)
-    CPL
-    AND (HL)
-    LD (HL),A
-    RET
-    LD C,#00
-    LD B,#40
-    LD A,L
-    AND #07
-    OR D
-    OR C
-    LD (HL),A
-    INC HL
-    DJNZ F7
-    LD A,C
-    ADD #08
-    LD C,A
-    CP #18
-    JR NZ,#ED
-    LD B,#40
-    LD A,#00
-    LD (HL),A
-    INC HL
-    DJNZ FC
-    LD A,#00
-    EX AF, AF'
-    LD A,#18
-    EX AF, AF'
-    LD B,#08
-    LD (HL),A
-    INC HL
-    DJNZ FC
-    ADD #20
-    EX AF, AF'
-    DEC A
-    AND A
-    JR NZ,#F2
-    LD B,#40
-    LD A,#00
-    LD (HL),A
-    INC HL
-    DJNZ FC
-    LD A,#00
-    LD B,#08
-    LD (HL),A
-    INC HL
-    DJNZ FC
-    INC A
-    CP #20
-    JR NZ,#F5
-    LD A,#80
-    LD B,#00
-    LD (HL),A
-    RRC A
-    INC HL
-    DJNZ FA
-    RET
-    DEC D
-    DEC D
-    RET
-    DEC D
-    DEC D
-    INC E
-    RET
-    DEC D
-    DEC D
-    INC E
-    INC E
-    RET
-    DEC D
-    INC E
-    INC E
-    RET
-    INC E
-    INC E
-    RET
-    INC E
-    INC E
-    INC D
-    RET
-    INC E
-    INC E
-    INC D
-    INC D
-    RET
-    INC E
-    INC D
-    INC D
-    RET
-    INC D
-    INC D
-    RET
-    INC D
-    INC D
-    DEC E
-    RET
-    INC D
-    INC D
-    DEC E
-    DEC E
-    RET
-    INC D
-    DEC E
-    DEC E
-    RET
-    DEC E
-    DEC E
-    RET
-    DEC E
-    DEC E
-    DEC D
-    RET
-    DEC E
-    DEC E
-    DEC D
-    DEC D
-    RET
-    DEC E
-    DEC D
-    DEC D
-    RET
+    LD SP,#6100   ; 
+    EI            ; 
+    XOR A         ; 
+    OUT (#FE),A   ; 
+    LD A,#04      ; 
+    LD HL,#5800   ; 
+    LD DE,#5801   ; 
+    LD BC,#02FF   ; 
+    LD (HL),A     ; 
+    LDIR          ; 
+    XOR A         ; 
+    LD HL,#4000   ; 
+    LD DE,#4001   ; 
+    LD BC,#17FF   ; 
+    LD (HL),A     ; 
+    LDIR          ; 
+    LD DE,#4000   ; 
+    LD HL,#A000   ; 
+    CALL 62C1     ; 
+    LD DE,#EFFF   ; 
+    LD A,#01      ; 
+    LD (DE),A     ; 
+    LD DE,#EFFC   ; 
+    LD A,#01      ; 
+    LD (DE),A     ; 
+    LD IX,#EFFD   ; 
+    LD DE,#8080   ; 
+    LD (IX),D     ; 
+    LD (IX+1),E   ; 
+    LD IX,#A400   ; 
+    LD B,#A0      ; 
+    CALL 6286     ; 
+    CP #C0        ; 
+    JR NC,#F9     ; 
+    LD (IX),A     ; 
+    INC HL        ; 
+    JR NC,#86CD   ; 
+    LD H,D        ; 
+    LD (IX),A     ; 
+    INC HL        ; 
+    JR NC,#EA10   ; 
+    HALT          ; 
+    LD IX,#EFFD   ; 
+    LD D,(IX)     ; 
+    LD E,(IX+1)   ; 
+    PUSH DE       ; 
+    CALL 62B0     ; 
+    CALL 61D3     ; 
+    POP DE        ; 
+    LD IX,#EFFF   ; 
+    LD A,#DF      ; 
+    IN A,(#FE)    ; 
+    BIT y,A       ; 
+    CALL Z,620A   ; 
+    LD A,#DF      ; 
+    IN A,(#FE)    ; 
+    BIT y,A       ; 
+    CALL Z,6217   ; 
+    CALL 6223     ; 
+    PUSH DE       ; 
+    CALL 62A1     ; 
+    POP DE        ; 
+    LD IX,#EFFD   ; 
+    LD (IX),D     ; 
+    LD (IX+1),E   ; 
+    LD IX,#A400   ; 
+    LD B,#A0      ; 
+    LD D,(IX)     ; 
+    LD E,(IX+1)   ; 
+    PUSH DE       ; 
+    CALL 62B0     ; 
+    POP DE        ; 
+    LD A,B        ; 
+    AND #07       ; 
+    INC A         ; 
+    ADD E         ; 
+    LD E,A        ; 
+    LD (IX+1),E   ; 
+    PUSH HL       ; 
+    AND #3AC5     ; 
+    CALL M,47EF   ; 
+    INC D         ; 
+    DJNZ FD       ; 
+    POP BC        ; 
+    POP HL        ; 
+    DJNZ 72DD     ; 
+    NOP           ; 
+    CALL 62A1     ; 
+    INC HL        ; 
+    CALL 23DD     ; 
+    INC HL        ; 
+    CALL D110     ; 
+    JP 6160       ; 
+    LD A,#F7      ; 
+    IN A,(#FE)    ; 
+    RRCA          ; 
+    JR C,#0D      ; 
+    RRCA          ; 
+    JR C,#11      ; 
+    RRCA          ; 
+    JR C,#15      ; 
+    RRCA          ; 
+    JR C,#19      ; 
+    RRCA          ; 
+    JR C,#1D      ; 
+    RET           ; 
+    LD DE,#EFFC   ; 
+    LD A,#01      ; 
+    LD (DE),A     ; 
+    RET           ; 
+    LD DE,#EFFC   ; 
+    LD A,#02      ; 
+    LD (DE),A     ; 
+    RET           ; 
+    LD DE,#EFFC   ; 
+    LD A,#03      ; 
+    LD (DE),A     ; 
+    RET           ; 
+    LD DE,#EFFC   ; 
+    LD A,#04      ; 
+    LD (DE),A     ; 
+    RET           ; 
+    LD DE,#EFFC   ; 
+    LD A,#05      ; 
+    LD (DE),A     ; 
+    RET           ; 
+    LD A,(IX)     ; 
+    INC A         ; 
+    CP #10        ; 
+    JR C,#01      ; 
+    XOR A         ; 
+    LD (IX),A     ; 
+    RET           ; 
+    LD A,(IX)     ; 
+    DEC A         ; 
+    JR NZ,#02     ; 
+    LD A,#0F      ; 
+    LD (IX),A     ; 
+    RET           ; 
+    LD A,(IX)     ; 
+    CP #00        ; 
+    CALL Z,6311   ; 
+    RET Z         ; 
+    CP #01        ; 
+    CALL Z,6314   ; 
+    RET Z         ; 
+    CP #02        ; 
+    CALL Z,6318   ; 
+    RET Z         ; 
+    CP #03        ; 
+    CALL Z,631D   ; 
+    RET Z         ; 
+    CP #04        ; 
+    CALL Z,6321   ; 
+    RET Z         ; 
+    CP #05        ; 
+    CALL Z,6324   ; 
+    RET Z         ; 
+    CP #06        ; 
+    CALL Z,6328   ; 
+    RET Z         ; 
+    CP #07        ; 
+    CALL Z,632D   ; 
+    RET Z         ; 
+    CP #08        ; 
+    CALL Z,6331   ; 
+    RET Z         ; 
+    CP #09        ; 
+    CALL Z,6334   ; 
+    RET Z         ; 
+    CP #0A        ; 
+    CALL Z,6338   ; 
+    RET Z         ; 
+    CP #0B        ; 
+    CALL Z,633D   ; 
+    RET Z         ; 
+    CP #0C        ; 
+    CALL Z,6341   ; 
+    RET Z         ; 
+    CP #0D        ; 
+    CALL Z,6344   ; 
+    RET Z         ; 
+    CP #0E        ; 
+    CALL Z,6348   ; 
+    RET Z         ; 
+    CP #0F        ; 
+    CALL Z,634D   ; 
+    RET           ; 
+    LD A,(#629E)  ; 
+    LD D,A        ; 
+    LD A,(#629F)  ; 
+    LD (#629E),A  ; 
+    ADD D         ; 
+    LD D,A        ; 
+    LD A,(#62A0)  ; 
+    LD (#629F),A  ; 
+    ADD D         ; 
+    RLCA          ; 
+    LD (#62A0),A  ; 
+    RET           ; 
+    NOP           ; 
+    LD HL,(#266D) ; 
+    AND B         ; 
+    LD L,D        ; 
+    LD D,(HL)     ; 
+    INC H         ; 
+    LD A,(HL)     ; 
+    INC H         ; 
+    LD L,E        ; 
+    OR (HL)       ; 
+    LD E,A        ; 
+    INC H         ; 
+    LD A,(DE)     ; 
+    OR (HL)       ; 
+    LD (DE),A     ; 
+    RET           ; 
+    LD H,#A0      ; 
+    LD L,D        ; 
+    LD D,(HL)     ; 
+    INC H         ; 
+    LD A,(HL)     ; 
+    INC H         ; 
+    LD L,E        ; 
+    OR (HL)       ; 
+    LD E,A        ; 
+    INC H         ; 
+    EX DE,HL      ; 
+    LD A,(DE)     ; 
+    CPL           ; 
+    AND (HL)      ; 
+    LD (HL),A     ; 
+    RET           ; 
+    LD C,#00      ; 
+    LD B,#40      ; 
+    LD A,L        ; 
+    AND #07       ; 
+    OR D          ; 
+    OR C          ; 
+    LD (HL),A     ; 
+    INC HL        ; 
+    DJNZ F7       ; 
+    LD A,C        ; 
+    ADD #08       ; 
+    LD C,A        ; 
+    CP #18        ; 
+    JR NZ,#ED     ; 
+    LD B,#40      ; 
+    LD A,#00      ; 
+    LD (HL),A     ; 
+    INC HL        ; 
+    DJNZ FC       ; 
+    LD A,#00      ; 
+    EX AF, AF'    ; 
+    LD A,#18      ; 
+    EX AF, AF'    ; 
+    LD B,#08      ; 
+    LD (HL),A     ; 
+    INC HL        ; 
+    DJNZ FC       ; 
+    ADD #20       ; 
+    EX AF, AF'    ; 
+    DEC A         ; 
+    AND A         ; 
+    JR NZ,#F2     ; 
+    LD B,#40      ; 
+    LD A,#00      ; 
+    LD (HL),A     ; 
+    INC HL        ; 
+    DJNZ FC       ; 
+    LD A,#00      ; 
+    LD B,#08      ; 
+    LD (HL),A     ; 
+    INC HL        ; 
+    DJNZ FC       ; 
+    INC A         ; 
+    CP #20        ; 
+    JR NZ,#F5     ; 
+    LD A,#80      ; 
+    LD B,#00      ; 
+    LD (HL),A     ; 
+    RRC A         ; 
+    INC HL        ; 
+    DJNZ FA       ; 
+    RET           ; 
+    DEC D         ; 
+    DEC D         ; 
+    RET           ; 
+    DEC D         ; 
+    DEC D         ; 
+    INC E         ; 
+    RET           ; 
+    DEC D         ; 
+    DEC D         ; 
+    INC E         ; 
+    INC E         ; 
+    RET           ; 
+    DEC D         ; 
+    INC E         ; 
+    INC E         ; 
+    RET           ; 
+    INC E         ; 
+    INC E         ; 
+    RET           ; 
+    INC E         ; 
+    INC E         ; 
+    INC D         ; 
+    RET           ; 
+    INC E         ; 
+    INC E         ; 
+    INC D         ; 
+    INC D         ; 
+    RET           ; 
+    INC E         ; 
+    INC D         ; 
+    INC D         ; 
+    RET           ; 
+    INC D         ; 
+    INC D         ; 
+    RET           ; 
+    INC D         ; 
+    INC D         ; 
+    DEC E         ; 
+    RET           ; 
+    INC D         ; 
+    INC D         ; 
+    DEC E         ; 
+    DEC E         ; 
+    RET           ; 
+    INC D         ; 
+    DEC E         ; 
+    DEC E         ; 
+    RET           ; 
+    DEC E         ; 
+    DEC E         ; 
+    RET           ; 
+    DEC E         ; 
+    DEC E         ; 
+    DEC D         ; 
+    RET           ; 
+    DEC E         ; 
+    DEC E         ; 
+    DEC D         ; 
+    DEC D         ; 
+    RET           ; 
+    DEC E         ; 
+    DEC D         ; 
+    DEC D         ; 
+    RET           ; 

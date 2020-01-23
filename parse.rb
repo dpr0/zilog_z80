@@ -17,9 +17,8 @@ class Disassembler
 
     def initialize(file_name)
         @file_name = file_name
-        @x = 0; @y = 0; @z = 0; @p = 0; @q = 0;
-        @nn = 0; @lyambda = nil; @prefix = nil; @xx = nil
-        @prev = nil
+        @x = 0; @y = 0; @z = 0; @p = 0; @q = 0; @xx = nil
+        @lyambda = nil; @prefix = nil; @prev = nil
     end
 
     def start
@@ -95,8 +94,12 @@ class Disassembler
             when 1 then @q ? "ADD HL,#{T_RP[@p]}" : calc_bytes(->(a, b){ "LD #{a},##{b}" }, T_RP[@p], 2)
             when 2
                 a1 = @p == 2 ? 'HL' : 'A'
-                a2 = ['(BC)','(DE)',"(#{@nn})","(#{@nn})"]
-                'LD ' + (@q ? "#{a1},#{a2[@p]}" : "#{a2[@p]},#{a1}")
+                if @p > 1
+                    calc_bytes((@q ? ->(a, b){ "LD #{a},(#{b})" } : ->(a, b){ "LD (#{b}),#{a}" }), a1, 2)
+                else
+                    a2 = ['(BC)','(DE)'][@p]
+                    'LD ' + (@q ? "#{a1},#{a2}" : "#{a2},#{a1}")
+                end
             when 3 then "#{@q ? 'DEC' : 'INC'} #{T_RP[@p]}"
             when 4 then "INC #{T_R[@y]}"
             when 5 then "DEC #{T_R[@y]}"
