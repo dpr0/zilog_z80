@@ -87,8 +87,8 @@ class Disassembler
                 case @y
                 when 0 then 'NOP'
                 when 1 then 'EX AF, AF\''
-                when 2 then calc_bytes(->(a, b){ "DJNZ #{b}" }, nil, 1)
-                when 3 then calc_bytes(->(a, b){ "JR #{b}" }, nil, 1)
+                when 2 then calc_bytes(->(a, b){ "DJNZ ##{b}" }, nil, 1)
+                when 3 then calc_bytes(->(a, b){ "JR ##{b}" }, nil, 1)
                 else        calc_bytes(->(a, b){ "JR #{a},##{b}" }, T_CC[@y-4], 1)
                 end
             when 1 then @q ? "ADD HL,#{T_RP[@p]}" : calc_bytes(->(a, b){ "LD #{a},##{b}" }, T_RP[@p], 2)
@@ -115,7 +115,7 @@ class Disassembler
             when 2 then calc_bytes(->(a, b){ "JP #{a},#{b}" }, T_CC[@y], 2)
             when 3
                 case @y
-                when 0 then calc_bytes(->(a, b){ "JP #{b}" }, nil, 2)
+                when 0 then calc_bytes(->(a, b){ "JP ##{b}" }, nil, 2)
                 when 1 then @prefix = 'cb'; nil
                 when 2 then calc_bytes(->(a, b){ "OUT (##{b}),A" }, nil, 1)
                 when 3 then calc_bytes(->(a, b){ "IN A,(##{b})" }, nil, 1)
@@ -124,11 +124,11 @@ class Disassembler
                 when 6 then 'DI'
                 when 7 then 'EI'
                 end
-            when 4 then calc_bytes(->(a, b){ "CALL #{a},#{b}" }, T_CC[@y], 2)
+            when 4 then calc_bytes(->(a, b){ "CALL #{a},##{b}" }, T_CC[@y], 2)
             when 5 
                 if @q
                     case @p
-                    when 0 then calc_bytes(->(a, b){ "CALL #{b}" }, nil, 2)
+                    when 0 then calc_bytes(->(a, b){ "CALL ##{b}" }, nil, 2)
                     when 1 then @prefix = 'dd'; nil
                     when 2 then @prefix = 'ed'; nil
                     when 3 then @prefix = 'fd'; nil
@@ -151,7 +151,7 @@ class Disassembler
 
     def cb_prefix
         @prefix = nil
-        ["#{T_ROT[@y]} ", 'BIT y,', 'RES y,', 'SET y,'][@x] + T_R[@z]
+        ["#{T_ROT[@y]} ", "BIT #{@y},", "RES #{@y},", "SET #{@y},"][@x] + T_R[@z]
     end
 
     def ed_prefix
